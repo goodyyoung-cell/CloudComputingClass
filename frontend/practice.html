@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>프론트–백엔드 연동 실습</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #ffffff;
+      --accent: #0284c7;
+      --accent-2: #7c3aed;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+        "Malgun Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      line-height: 1.6;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 640px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+    }
+    h1 { font-size: 26px; margin-bottom: 6px; }
+    .subtitle { color: var(--muted); margin-bottom: 28px; font-size: 15px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    input {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px 14px;
+      border: 1px solid rgba(15, 23, 42, 0.2);
+      border-radius: 10px;
+      font-size: 15px;
+      color: var(--text);
+    }
+    input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    button {
+      padding: 12px 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    button:hover { transform: translateY(-2px); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .result {
+      margin-top: 24px;
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      min-height: 58px;
+      font-size: 16px;
+      word-break: break-word;
+    }
+    .result.ok { border-left: 4px solid var(--accent); }
+    .result.err { border-left: 4px solid #ef4444; color: #b91c1c; }
+    .hint { margin-top: 10px; font-size: 13px; color: var(--muted); }
+    .backlink { display: inline-block; margin-top: 28px; color: var(--accent); text-decoration: none; }
+    .backlink:hover { text-decoration: underline; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>프론트–백엔드 연동 실습</h1>
+    <p class="subtitle">
+      이름을 입력하고 버튼을 누르면, Render에 배포된 FastAPI 백엔드의
+      <code>/api/hello</code> API를 호출해 응답을 보여줍니다.
+    </p>
+
+    <label for="name">이름</label>
+    <div class="row">
+      <input id="name" type="text" placeholder="예: 손영훈" value="손영훈" />
+      <button id="callBtn" onclick="callApi()">백엔드 호출</button>
+    </div>
+
+    <div id="result" class="result">여기에 백엔드 응답이 표시됩니다.</div>
+    <p class="hint">백엔드 주소: <code id="apiBase"></code></p>
+
+    <a class="backlink" href="./index.html">← 개인 소개 페이지로 돌아가기</a>
+  </main>
+
+  <script>
+    // ⚠️ Render 배포 후 아래 주소를 본인의 백엔드 주소로 바꿔주세요.
+    // 예: "https://cloudcomputingclass.onrender.com"
+    const API_BASE = "https://YOUR-BACKEND.onrender.com";
+
+    document.getElementById("apiBase").textContent = API_BASE;
+
+    async function callApi() {
+      const btn = document.getElementById("callBtn");
+      const box = document.getElementById("result");
+      const name = document.getElementById("name").value.trim() || "손영훈";
+
+      btn.disabled = true;
+      box.className = "result";
+      box.textContent = "백엔드 호출 중...";
+
+      try {
+        const res = await fetch(`${API_BASE}/api/hello?name=${encodeURIComponent(name)}`);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        box.className = "result ok";
+        box.textContent = "✅ " + data.message;
+      } catch (e) {
+        box.className = "result err";
+        box.textContent =
+          "❌ 호출 실패: " + e.message +
+          " — API_BASE 주소가 올바른지, 백엔드가 실행 중인지 확인하세요.";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
