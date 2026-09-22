@@ -34,8 +34,9 @@ FastAPI는 `/docs` 경로에서 Swagger UI를 자동 제공합니다.
 ## 배포 주소
 
 - **GitHub 저장소**: https://github.com/goodyyoung-cell/CloudComputingClass
-- **Vercel (프론트엔드)**: `배포 후 주소 입력`
+- **Vercel (프론트엔드)**: https://cloud-computing-class.vercel.app/
 - **백엔드 Swagger UI (Render)**: https://cloudcomputingclass.onrender.com/docs
+- **백엔드 기본 주소 (Render)**: https://cloudcomputingclass.onrender.com
 
 ## 로컬 실행 방법
 
